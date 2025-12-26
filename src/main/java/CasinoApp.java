@@ -7,21 +7,25 @@ public class CasinoApp {
     private final Scanner scanner;
     private final Player player;
     private final CasinoRoom room;
-//    private final SaveProgress saveProgress;
-    private final FileSaver casinoSaver;
     private final Menu menu;
     private final String[] menuOptions = {"Пополнить", "Играть", "Выход"};
+    private final DatabaseHandler dbHandler;
+    private final String testDatabaseUserName = "test_user";
 
     public CasinoApp() {
         this.scanner = new Scanner(System.in);
-        this.casinoSaver = new FileSaver("casino");
-        this.player = new Player(casinoSaver.get());
+        this.dbHandler = new DatabaseHandler();
+        System.out.println("Подключение к базе данных...");
+        this.dbHandler.createNewTable();
+        System.out.println("Таблица 'casino_players' успешно проверена/создана");
+        this.player = new Player(dbHandler.getBalance(testDatabaseUserName));
         this.menu = new Menu(menuOptions, this.scanner);
-        this.room = new CasinoRoom(casinoSaver);
+        this.room = new CasinoRoom(dbHandler);
     }
 
     public void run(){
-        System.out.println("Ваш баланс: " + player.getBalance() + "\n");
+        System.out.println("Ваш баланс: " + dbHandler.getBalance(testDatabaseUserName) + "\n");
+        System.out.println("Имя игрока: " + testDatabaseUserName + "\n");
         while(true){
             System.out.println("=== МЕНЮ ДЕЙСТВИЙ ===");
             menu.showMenu();
@@ -34,7 +38,7 @@ public class CasinoApp {
         switch(choice){
             case 1:
                 deposit();
-                casinoSaver.save(player.getBalance());
+                dbHandler.updatePlayerBalance(testDatabaseUserName, player.getBalance());
                 break;
             case 2:
                 chooseAndPlayGame();
@@ -48,10 +52,11 @@ public class CasinoApp {
         }
     }
 
-    private void deposit(){
+    private int deposit(){
+        int amount = 0;
         System.out.print("Впиши сумму пополнения: ");
         if(this.scanner.hasNextInt()){
-            int amount = this.scanner.nextInt();
+            amount = this.scanner.nextInt();
             if(amount > 0 && amount<100000){
                 player.deposit(amount);
                 System.out.println("Баланс пополнен на " + amount);
@@ -63,6 +68,7 @@ public class CasinoApp {
             System.out.println("Invalid data: Введено не число");
             scanner.next();
         }
+        return amount;
     }
 
     private void chooseAndPlayGame(){

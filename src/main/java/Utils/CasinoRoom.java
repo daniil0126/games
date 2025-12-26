@@ -5,10 +5,10 @@ import Entity.Player;
 import java.util.Scanner;
 
 public class CasinoRoom {
-    private FileSaver casinoSaver;
+    private DatabaseHandler dbHandler;
 
-    public CasinoRoom(FileSaver casinoSaver) {
-        this.casinoSaver = casinoSaver;
+    public CasinoRoom(DatabaseHandler dbHandler) {
+        this.dbHandler = dbHandler;
     }
 
     public void playGame(Player player, Scanner scanner, GameCreator gameCreator) {
@@ -31,7 +31,7 @@ public class CasinoRoom {
             else {
                 System.out.println("Проигрыш((((");
             }
-            casinoSaver.save(player.getBalance());
+            dbHandler.updatePlayerBalance("test_user",  player.getBalance());
         }
     }
 }
