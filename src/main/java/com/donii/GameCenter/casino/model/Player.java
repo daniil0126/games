@@ -1,10 +1,22 @@
-package Entity;
+package com.donii.GameCenter.casino.model;
 
 public class Player {
     private int balance;
+    private final String username;
+    private final String password;
 
-    public Player(int startBalance) {
+    public Player(int startBalance,  String username, String password) {
         this.balance = startBalance;
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public int getBalance() {

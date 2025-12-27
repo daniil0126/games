@@ -1,14 +1,15 @@
-package Utils;
+package com.donii.GameCenter.casino.service;
 
-import Entity.Player;
+import com.donii.GameCenter.casino.Utils.GameCreator;
+import com.donii.GameCenter.casino.model.Player;
+import com.donii.GameCenter.casino.repository.UserRepository;
 
 import java.util.Scanner;
 
-public class CasinoRoom {
-    private DatabaseHandler dbHandler;
-
-    public CasinoRoom(DatabaseHandler dbHandler) {
-        this.dbHandler = dbHandler;
+public class PlayerService {
+    private final UserRepository userRepository;
+    public PlayerService(UserRepository ur) {
+        this.userRepository = ur;
     }
 
     public void playGame(Player player, Scanner scanner, GameCreator gameCreator) {
@@ -31,7 +32,8 @@ public class CasinoRoom {
             else {
                 System.out.println("Проигрыш((((");
             }
-            dbHandler.updatePlayerBalance("test_user",  player.getBalance());
+            //
+            userRepository.updatePlayer(player);
         }
     }
 }

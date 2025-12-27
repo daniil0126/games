@@ -1,6 +1,6 @@
-package Games;
+package com.donii.GameCenter.numbers;
 
-import Interfaces.GameInterface;
+import com.donii.GameCenter.numbers.Interfaces.GameInterface;
 
 import java.util.Scanner;
 public class GuessNumber implements GameInterface {

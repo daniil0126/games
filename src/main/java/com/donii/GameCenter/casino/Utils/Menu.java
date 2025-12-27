@@ -1,4 +1,4 @@
-package Utils;
+package com.donii.GameCenter.casino.Utils;
 
 import java.util.Scanner;
 

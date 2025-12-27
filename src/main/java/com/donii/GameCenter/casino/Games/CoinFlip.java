@@ -1,5 +1,5 @@
-package Games;
-import Utils.GameCreator;
+package com.donii.GameCenter.casino.Games;
+import com.donii.GameCenter.casino.Utils.GameCreator;
 
 import java.util.Scanner;
 
