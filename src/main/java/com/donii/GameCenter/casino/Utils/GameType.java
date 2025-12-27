@@ -1,7 +1,7 @@
-package Utils;
+package com.donii.GameCenter.casino.Utils;
 
-import Games.CoinFlip;
-import Games.SlotMachine;
+import com.donii.GameCenter.casino.Games.CoinFlip;
+import com.donii.GameCenter.casino.Games.SlotMachine;
 
 public enum GameType {
     SLOTS("Слоты"){

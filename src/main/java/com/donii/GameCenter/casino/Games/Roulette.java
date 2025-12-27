@@ -1,6 +1,6 @@
-package Games;
+package com.donii.GameCenter.casino.Games;
 
-import Utils.GameCreator;
+import com.donii.GameCenter.casino.Utils.GameCreator;
 
 import java.util.Scanner;
 
