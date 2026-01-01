@@ -1,5 +1,6 @@
 package com.donii.GameCenter.casino.Games;
 import com.donii.GameCenter.casino.Utils.GameCreator;
+import com.donii.GameCenter.casino.Utils.Text;
 
 import java.util.Scanner;
 
@@ -9,12 +10,12 @@ public class CoinFlip extends GameCreator {
     }
 
     public int play(Scanner scanner){
-        System.out.println("Орел/Решка");
+        System.out.println(Text.BLUE + "Орел/Решка" + Text.RESET);
         System.out.print("Сделайте выбор: ");
         String choice = scanner.next();
         int player =
                 choice.equalsIgnoreCase("орел") ||
-                choice.equalsIgnoreCase("орёл") ? 0 : 1;
+                        choice.equalsIgnoreCase("орёл") ? 0 : 1;
 
         int coin = (Math.random() < 0.5) ? 0 : 1;
         System.out.println("Выпал" + ((coin == 0) ? " Орел" : "a Решка"));

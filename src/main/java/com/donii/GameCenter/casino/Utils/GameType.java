@@ -14,7 +14,7 @@ public enum GameType {
     ROULETTE("Рулетка"){
         @Override
         public GameCreator createGame(){
-            System.out.println("В разработке...");
+            System.out.println(Text.YELLOW + "В разработке..." + Text.RESET);
             System.exit(0);
             return null;
         }
