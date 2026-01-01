@@ -16,7 +16,7 @@ public abstract class GameCreator {
     public abstract int play(Scanner scanner);
 
     public void showHeader(String header){
-        System.out.println("=== ИГРА: " + header + " ===");
+        System.out.println(Text.PURPLE + "=== ИГРА: " + header + " ===" + Text.RESET);
     }
 
 }

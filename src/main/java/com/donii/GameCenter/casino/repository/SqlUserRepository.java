@@ -1,5 +1,6 @@
 package com.donii.GameCenter.casino.repository;
 
+import com.donii.GameCenter.casino.Utils.Text;
 import com.donii.GameCenter.casino.model.Player;
 
 import java.sql.Connection;
@@ -27,7 +28,7 @@ public class SqlUserRepository implements UserRepository {
 
             preparedStmt.executeUpdate();
         } catch(SQLException e) {
-            System.out.println("Error connecting to database: " + e.getMessage());
+            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() + Text.RESET);
         }
     }
 
@@ -42,7 +43,7 @@ public class SqlUserRepository implements UserRepository {
 
             preparedStmt.executeUpdate();
         } catch(SQLException e) {
-            System.out.println("Error connecting to database: " + e.getMessage());
+            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() + Text.RESET);
         }
     }
 
@@ -50,7 +51,7 @@ public class SqlUserRepository implements UserRepository {
     public Player findByName(String username){
         String sql = "SELECT * FROM casino_users WHERE name = ?";
         try (Connection conn = databaseHandler.connect();
-            PreparedStatement preparedStmt = conn.prepareStatement(sql)){
+             PreparedStatement preparedStmt = conn.prepareStatement(sql)){
 
             preparedStmt.setString(1, username);
             ResultSet rs = preparedStmt.executeQuery();
@@ -81,7 +82,7 @@ public class SqlUserRepository implements UserRepository {
             }
             return rs.getInt("balance");
         } catch (SQLException e){
-            System.out.println("Error connecting to database: " + e.getMessage());
+            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() +  Text.RESET);
         }
         return 0;
     }
@@ -99,7 +100,7 @@ public class SqlUserRepository implements UserRepository {
             }
             return rs.getString("password");
         } catch (SQLException e){
-            System.out.println("Error connecting to database: " + e.getMessage());
+            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() + Text.RESET);
         }
         return null;
     }

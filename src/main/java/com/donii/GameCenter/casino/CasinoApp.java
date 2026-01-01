@@ -3,6 +3,7 @@ package com.donii.GameCenter.casino;
 import com.donii.GameCenter.casino.Utils.GameCreator;
 import com.donii.GameCenter.casino.Utils.GameType;
 import com.donii.GameCenter.casino.Utils.Menu;
+import com.donii.GameCenter.casino.Utils.Text;
 import com.donii.GameCenter.casino.model.Player;
 import com.donii.GameCenter.casino.repository.DatabaseHandler;
 import com.donii.GameCenter.casino.repository.SqlUserRepository;
@@ -25,9 +26,9 @@ public class CasinoApp {
         DatabaseHandler dbHandler = new DatabaseHandler();
         this.userRepository = new SqlUserRepository(dbHandler);
         this.authService = new AuthService(userRepository);
-        System.out.println("Подключение к базе данных...");
+        System.out.println(Text.GREEN + "Подключение к базе данных..." + Text.RESET);
         dbHandler.createNewTable();
-        System.out.println("Таблица 'casino_players' успешно проверена/создана");
+        System.out.println(Text.GREEN + "Таблица 'casino_players' успешно проверена/создана" + Text.RESET);
         String[] menuOptions = {"Пополнить", "Играть", "Выход"};
         this.menu = new Menu(menuOptions, this.scanner);
         this.room = new PlayerService(userRepository);
@@ -35,22 +36,25 @@ public class CasinoApp {
 
     public void run(){
         player = authorization();
+        if(player == null){
+            return;
+        }
         System.out.println("Ваш баланс: " + userRepository.getBalance(player) + "\n");
         System.out.println("Имя игрока: " + player.getUsername() + "\n");
         while(true){
-            System.out.println("=== МЕНЮ ДЕЙСТВИЙ ===");
+            System.out.println(Text.PURPLE + "=== МЕНЮ ДЕЙСТВИЙ ===" + Text.RESET);
             menu.showMenu();
             int choice = scanner.nextInt();
             handleMenuChoice(choice);
         }
     }
 
-    public Player authorization(){
-        System.out.println("------ Авторизация / Регистрация ------");
+    private Player authorization(){
+        System.out.println(Text.CYAN + "------ Авторизация / Регистрация ------" +  Text.RESET);
         System.out.println(
                 "1. Зарегистрироваться\n" +
-                "2. Войти\n" +
-                "3. Выйти");
+                        "2. Войти\n" +
+                        "3. Выйти");
         System.out.print("Выбери действие: ");
         int choice = scanner.nextInt();
         switch(choice){
@@ -74,16 +78,18 @@ public class CasinoApp {
                     System.out.print("Введите пароль: ");
                     String password = scanner.next();
                     player = authService.loginPlayer(username, password);
-
-                    System.out.println("Привет снова, " + username + "!");
+                    if(player != null){
+                        System.out.println(Text.CYAN + "Привет снова, " + username + "!" +  Text.RESET);
+                    }
                 } catch (Exception e) {
-                    System.out.println("Возникли ошибки при авторизации игрока: " + e.getMessage());
+                    System.out.println(Text.RED + "Возникли ошибки при авторизации игрока: " + e.getMessage() + Text.RESET);
                 }
             }
             case  3 -> {
                 System.exit(0);
             }
             default -> {
+                System.out.println("Неверный ввод");
                 return null;
             }
         }
@@ -115,9 +121,9 @@ public class CasinoApp {
             amount = this.scanner.nextInt();
             if(amount > 0 && amount<100000){
                 player.deposit(amount);
-                System.out.println("Баланс пополнен на " + amount);
+                System.out.println(Text.GREEN + "Баланс пополнен на " + amount + Text.RESET);
             } else {
-                System.out.println("Invalid data: Некорректная сумма");
+                System.out.println(Text.RED + "Invalid data: Некорректная сумма" + Text.RESET);
             }
 
         } else {
@@ -145,3 +151,4 @@ public class CasinoApp {
         this.room.playGame(player, scanner, gameCreator);
     }
 }
+

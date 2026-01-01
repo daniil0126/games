@@ -1,6 +1,7 @@
 package com.donii.GameCenter.casino.service;
 
 import com.donii.GameCenter.casino.Utils.GameCreator;
+import com.donii.GameCenter.casino.Utils.Text;
 import com.donii.GameCenter.casino.model.Player;
 import com.donii.GameCenter.casino.repository.UserRepository;
 
@@ -16,7 +17,7 @@ public class PlayerService {
         gameCreator.showHeader(gameCreator.getName());
 
         if(player.getBalance() <= 0) {
-            System.out.println("Мало денег на балансе");
+            System.out.println(Text.RED + "Мало денег на балансе" + Text.RESET);
             return;
         }
 
@@ -26,13 +27,12 @@ public class PlayerService {
             int coefficient = gameCreator.play(scanner);
             if(coefficient > 0){
                 int win = bet * coefficient;
-                System.out.println("Победа! Выигрыш: " + win);
+                System.out.println(Text.GREEN + "Победа! Выигрыш: " + win +  Text.RESET);
                 player.deposit(win);
             }
             else {
-                System.out.println("Проигрыш((((");
+                System.out.println(Text.RED + "Проигрыш((((" + Text.RESET);
             }
-            //
             userRepository.updatePlayer(player);
         }
     }
