@@ -10,14 +10,18 @@ import java.sql.Statement;
 public class DatabaseHandler {
     private static final String DB_URL = "jdbc:sqlite:casino.db";
 
-    public Connection connect(){
-        Connection conn = null;
+    public static Connection connection;
+
+    public Connection getConnection() {
         try {
-            conn = DriverManager.getConnection(DB_URL);
-        } catch(SQLException e) {
-            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() + Text.RESET);
+            if(connection == null || connection.isClosed()){
+                connection = DriverManager.getConnection(DB_URL);
+                System.out.println(Text.green("Подключение к БД успешно"));
+            }
+        } catch (SQLException e) {
+            System.out.println(Text.red("Ошибка подключения к БД"));
         }
-        return conn;
+        return connection;
     }
 
     public void createNewTable() {
@@ -28,9 +32,7 @@ public class DatabaseHandler {
                 "balance integer\n" +
                 ");";
 
-        try(Connection conn = this.connect();
-            Statement statement = conn.createStatement()){
-
+        try(Statement statement = getConnection().createStatement()){
             statement.execute(sql);
         } catch(SQLException e) {
             System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() +  Text.RESET);

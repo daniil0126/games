@@ -72,10 +72,14 @@ public class CasinoApp {
         int MAX_DEPOSIT = 1000000;
         int MIN_DEPOSIT = 100;
 
-        return InputUtils.safeInput(() -> {
+        int amount = InputUtils.safeInput(() -> {
             System.out.print("Впиши сумму пополнения: ");
             return InputUtils.numberChoice(MIN_DEPOSIT, MAX_DEPOSIT, scanner);
         });
+        player.deposit(amount);
+        System.out.println(Text.green("Баланс был пополнен на " + amount));
+
+        return amount;
     }
 
     private Player authorization(){
