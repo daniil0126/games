@@ -11,14 +11,6 @@ public enum GameType {
             return new SlotMachine(symbols);
         }
     },
-    ROULETTE("Рулетка"){
-        @Override
-        public GameCreator createGame(){
-            System.out.println(Text.YELLOW + "В разработке..." + Text.RESET);
-            System.exit(0);
-            return null;
-        }
-    },
     COIN_FLIP("Орел и Решка"){
         @Override
         public GameCreator createGame(){
