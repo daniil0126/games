@@ -1,5 +1,8 @@
 package com.donii.GameCenter.casino.model;
 
+import com.donii.GameCenter.casino.Exceptions.InsufficientFundsException;
+import com.donii.GameCenter.casino.Utils.Text;
+
 public class Player {
     private int balance;
     private final String username;
@@ -28,17 +31,19 @@ public class Player {
     }
 
     public boolean withdraw(int amount){
+        int MIN_BET = 100;
         if(amount < 0){
-            System.out.println("Нельзя вывести отрицательное значение");
-            return false;
+            throw new IllegalArgumentException("Сумма не может быть отрицательной");
         }
-        if(this.balance >= amount){
-            System.out.println("Success!");
+        else if(this.balance >= amount && amount >= MIN_BET){
             this.balance -= amount;
             return true;
         }
+        else if(this.balance < MIN_BET) {
+            throw new InsufficientFundsException("Недостаточно средств");
+        }
         else {
-            System.out.println("Недостаточно средств");
+            System.out.println(Text.red("Непредвиденная ошибка"));
             return false;
         }
     }

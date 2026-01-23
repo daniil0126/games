@@ -1,9 +1,7 @@
 package com.donii.GameCenter.casino;
 
-import com.donii.GameCenter.casino.Utils.GameCreator;
-import com.donii.GameCenter.casino.Utils.GameType;
-import com.donii.GameCenter.casino.Utils.Menu;
-import com.donii.GameCenter.casino.Utils.Text;
+import com.donii.GameCenter.casino.Exceptions.IncorrectInputException;
+import com.donii.GameCenter.casino.Utils.*;
 import com.donii.GameCenter.casino.model.Player;
 import com.donii.GameCenter.casino.repository.DatabaseHandler;
 import com.donii.GameCenter.casino.repository.SqlUserRepository;
@@ -20,6 +18,7 @@ public class CasinoApp {
     private final Menu menu;
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final String[] menuOptions = {"Пополнить", "Играть", "Выход"};
 
     public CasinoApp() {
         this.scanner = new Scanner(System.in);
@@ -29,7 +28,6 @@ public class CasinoApp {
         System.out.println(Text.GREEN + "Подключение к базе данных..." + Text.RESET);
         dbHandler.createNewTable();
         System.out.println(Text.GREEN + "Таблица 'casino_players' успешно проверена/создана" + Text.RESET);
-        String[] menuOptions = {"Пополнить", "Играть", "Выход"};
         this.menu = new Menu(menuOptions, this.scanner);
         this.room = new PlayerService(userRepository);
     }
@@ -41,59 +39,18 @@ public class CasinoApp {
         }
         System.out.println("Ваш баланс: " + userRepository.getBalance(player) + "\n");
         System.out.println("Имя игрока: " + player.getUsername() + "\n");
+
+        int firstChoiceRange = 1;
+        int secondChoiceRange = menuOptions.length;
         while(true){
-            System.out.println(Text.PURPLE + "=== МЕНЮ ДЕЙСТВИЙ ===" + Text.RESET);
-            menu.showMenu();
-            int choice = scanner.nextInt();
+            int choice = InputUtils.safeInput(() -> {
+                    System.out.println(Text.PURPLE + "=== МЕНЮ ДЕЙСТВИЙ ===" + Text.RESET);
+                    menu.showMenu();
+                    System.out.print("Выберите действие: ");
+                    return InputUtils.numberChoice(firstChoiceRange, secondChoiceRange, scanner);
+            });
             handleMenuChoice(choice);
         }
-    }
-
-    private Player authorization(){
-        System.out.println(Text.CYAN + "------ Авторизация / Регистрация ------" +  Text.RESET);
-        System.out.println(
-                "1. Зарегистрироваться\n" +
-                        "2. Войти\n" +
-                        "3. Выйти");
-        System.out.print("Выбери действие: ");
-        int choice = scanner.nextInt();
-        switch(choice){
-            case 1 -> {
-                try{
-                    System.out.print("Введите имя пользователя: ");
-                    String username = scanner.next();
-                    System.out.print("Придумайте пароль: ");
-                    String password = scanner.next();
-                    player = authService.registerPlayer(username, password);
-
-                    System.out.println("Пользователь " + username + " успешно создан!");
-                } catch(Exception e){
-                    System.out.println("Возникли ошибки при создании игрока: " + e.getMessage());
-                }
-            }
-            case 2 -> {
-                try {
-                    System.out.print("Введите имя пользователя: ");
-                    String username = scanner.next();
-                    System.out.print("Введите пароль: ");
-                    String password = scanner.next();
-                    player = authService.loginPlayer(username, password);
-                    if(player != null){
-                        System.out.println(Text.CYAN + "Привет снова, " + username + "!" +  Text.RESET);
-                    }
-                } catch (Exception e) {
-                    System.out.println(Text.RED + "Возникли ошибки при авторизации игрока: " + e.getMessage() + Text.RESET);
-                }
-            }
-            case  3 -> {
-                System.exit(0);
-            }
-            default -> {
-                System.out.println("Неверный ввод");
-                return null;
-            }
-        }
-        return player;
     }
 
     private void handleMenuChoice(int choice){
@@ -108,30 +65,91 @@ public class CasinoApp {
             case 3:
                 System.out.println("Выход...");
                 System.exit(0);
-            default:
-                System.out.println("Непредвиденный ввод");
-                break;
         }
     }
 
     private int deposit(){
-        int amount = 0;
-        System.out.print("Впиши сумму пополнения: ");
-        if(this.scanner.hasNextInt()){
-            amount = this.scanner.nextInt();
-            if(amount > 0 && amount<100000){
-                player.deposit(amount);
-                System.out.println(Text.GREEN + "Баланс пополнен на " + amount + Text.RESET);
-            } else {
-                System.out.println(Text.RED + "Invalid data: Некорректная сумма" + Text.RESET);
-            }
+        int MAX_DEPOSIT = 1000000;
+        int MIN_DEPOSIT = 100;
 
-        } else {
-            System.out.println("Invalid data: Введено не число");
-            scanner.next();
-        }
-        return amount;
+        return InputUtils.safeInput(() -> {
+            System.out.print("Впиши сумму пополнения: ");
+            return InputUtils.numberChoice(MIN_DEPOSIT, MAX_DEPOSIT, scanner);
+        });
     }
+
+    private Player authorization(){
+        System.out.println(Text.CYAN + "------ Авторизация / Регистрация ------" +  Text.RESET);
+        System.out.println(
+                "1. Зарегистрироваться\n" +
+                        "2. Войти\n" +
+                        "3. Выйти");
+        boolean flag = true;
+        int choice = 0;
+        while(flag){
+            System.out.print("Выбери действие: ");
+            String input = scanner.next();
+            try {
+                choice = Integer.parseInt(input);
+                if(choice < 1 || choice > 3){
+                    System.out.println("Пошел нахуй");
+                } else flag = false;
+            } catch (NumberFormatException e) {
+                System.out.println("ЗАНОВО НАХУЙ");
+            }
+        }
+        switch(choice){
+            case 1 -> {
+                while(player == null){
+                    try{
+                        System.out.print("Введите имя пользователя: ");
+                        String username = scanner.next();
+                        System.out.print("Придумайте пароль: ");
+                        String password = scanner.next();
+                        player = authService.registerPlayer(username, password);
+
+                        System.out.println(player != null ? "Пользователь " + username + " успешно создан!" : "");
+                    } catch(Exception e){
+                        System.out.println("Возникли ошибки при создании игрока: " + e.getMessage());
+                    }
+                }
+            }
+            case 2 -> {
+                while(player == null){
+                    try {
+                        String username = "";
+                        String password = "";
+                        boolean isValid = false;
+
+                        while(!isValid){
+                            System.out.print("Введите имя пользователя: ");
+                            username = scanner.next();
+                            System.out.print("Введите пароль: ");
+                            password = scanner.next();
+                            player = authService.loginPlayer(username, password);
+                            if(player == null){
+                                throw new IncorrectInputException("Неверный пароль или имя пользователя");
+                            } else {
+                                isValid = true;
+                            }
+                        }
+                        System.out.println(Text.CYAN + "Привет снова, " + username + "!" +  Text.RESET);
+                    } catch (Exception e) {
+                        System.out.println(Text.RED + "Возникли ошибки при авторизации игрока: " + e.getMessage() + Text.RESET);
+                    }
+                }
+            }
+            case  3 -> {
+                System.exit(0);
+            }
+            default -> {
+                System.out.println("Неверный ввод");
+            }
+        }
+        return player;
+    }
+
+
 
     private void chooseAndPlayGame(){
         System.out.println("----ВЫБОР ИГРЫ----");
@@ -139,12 +157,10 @@ public class CasinoApp {
         for(int i = 0; i < availableGames.length; i++){
             System.out.println((i + 1) + ". " + availableGames[i].getTitle());
         }
-        System.out.print("Выберите игру: ");
-        int choice = scanner.nextInt();
-        if(choice < 1 || choice > availableGames.length){
-            System.out.println("Ошибка при выборе игры");
-            return;
-        }
+        int choice = InputUtils.safeInput(() -> {
+            System.out.print("Выберите игру: ");
+            return InputUtils.numberChoice(1, availableGames.length, scanner);
+        });
 
         GameType selectedGameType = availableGames[choice-1];
         GameCreator gameCreator = selectedGameType.createGame();

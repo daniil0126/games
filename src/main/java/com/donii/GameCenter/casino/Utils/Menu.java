@@ -17,7 +17,6 @@ public class Menu {
             System.out.println(i + " - " + option);
             i++;
         }
-        System.out.print("Выберите действие: ");
     }
 
     public int getChoice(){

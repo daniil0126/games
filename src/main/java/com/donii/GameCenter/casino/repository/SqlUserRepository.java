@@ -15,6 +15,10 @@ public class SqlUserRepository implements UserRepository {
         this.databaseHandler = databaseHandler;
     }
 
+    public void ConnectionException(Exception e) {
+        System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() + Text.RESET);
+    }
+
     @Override
     public void savePlayer(Player player) {
         String sql = "INSERT OR REPLACE INTO casino_users(name, password, balance) VALUES(?, ?, ?)";
@@ -28,7 +32,7 @@ public class SqlUserRepository implements UserRepository {
 
             preparedStmt.executeUpdate();
         } catch(SQLException e) {
-            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() + Text.RESET);
+            ConnectionException(e);
         }
     }
 
@@ -43,7 +47,7 @@ public class SqlUserRepository implements UserRepository {
 
             preparedStmt.executeUpdate();
         } catch(SQLException e) {
-            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() + Text.RESET);
+            ConnectionException(e);
         }
     }
 
@@ -64,7 +68,7 @@ public class SqlUserRepository implements UserRepository {
             }
         }
         catch(SQLException e){
-            e.printStackTrace();
+            ConnectionException(e);
         }
         return null;
     }
@@ -78,11 +82,10 @@ public class SqlUserRepository implements UserRepository {
             preparedStmt.setString(1,  player.getUsername());
             ResultSet rs = preparedStmt.executeQuery();
             if(rs.next()){
-                rs.getInt("balance");
+                return rs.getInt("balance");
             }
-            return rs.getInt("balance");
         } catch (SQLException e){
-            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() +  Text.RESET);
+            ConnectionException(e);
         }
         return 0;
     }
@@ -96,11 +99,10 @@ public class SqlUserRepository implements UserRepository {
             preparedStmt.setString(1,  username);
             ResultSet rs = preparedStmt.executeQuery();
             if(rs.next()){
-                rs.getString("password");
+                return rs.getString("password");
             }
-            return rs.getString("password");
         } catch (SQLException e){
-            System.out.println(Text.RED + "Error connecting to database: " + e.getMessage() + Text.RESET);
+            ConnectionException(e);
         }
         return null;
     }

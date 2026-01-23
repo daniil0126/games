@@ -1,6 +1,8 @@
 package com.donii.GameCenter.casino.service;
 
+import com.donii.GameCenter.casino.Exceptions.InsufficientFundsException;
 import com.donii.GameCenter.casino.Utils.GameCreator;
+import com.donii.GameCenter.casino.Utils.InputUtils;
 import com.donii.GameCenter.casino.Utils.Text;
 import com.donii.GameCenter.casino.model.Player;
 import com.donii.GameCenter.casino.repository.UserRepository;
@@ -17,13 +19,10 @@ public class PlayerService {
         gameCreator.showHeader(gameCreator.getName());
 
         if(player.getBalance() <= 0) {
-            System.out.println(Text.RED + "Мало денег на балансе" + Text.RESET);
-            return;
+            throw new InsufficientFundsException("Мало денег на балансе");
         }
-
-        System.out.print("Ваша ставка: ");
-        int bet = scanner.nextInt();
-        if(player.withdraw(bet)) {
+        int bet = bet(scanner);
+        if(player.withdraw(bet) && bet > 0) {
             int coefficient = gameCreator.play(scanner);
             if(coefficient > 0){
                 int win = bet * coefficient;
@@ -36,4 +35,15 @@ public class PlayerService {
             userRepository.updatePlayer(player);
         }
     }
+
+    private int bet(Scanner scanner) {
+        int MIN_BET = 100;
+        int MAX_BET = 999999;
+
+        return InputUtils.safeInput(() -> {
+            System.out.print("Ваша ставка: ");
+            return InputUtils.numberChoice(MIN_BET, MAX_BET, scanner);
+        });
+    }
+
 }
